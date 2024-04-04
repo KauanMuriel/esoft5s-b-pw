@@ -8,7 +8,7 @@ window.onload = async () => {
             document.title += ` ${value}`;
             document.querySelector('#pokemon-titulo').textContent += value;
 
-            fetch('https://pokeapi.co/api/v2/pokemon/wartortle')
+            fetch(`https://pokeapi.co/api/v2/pokemon/${value}`)
                 .then(async (response) => {
                     const pokemonInformation = await response.json();
                     const pokemonElementSection = document.querySelector('#evolucao-section')
