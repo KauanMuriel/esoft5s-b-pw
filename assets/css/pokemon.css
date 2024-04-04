@@ -1,0 +1,16 @@
+header {
+    height: 15vh;
+}
+
+footer {
+    min-height: 20vh;
+}
+
+main {
+    height: 50vh;
+    grid-template-columns: 1fr;
+}
+
+main section {
+    width: 80vw;
+}
