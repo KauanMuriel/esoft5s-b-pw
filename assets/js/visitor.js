@@ -3,7 +3,7 @@ function updateLocalStorageWithVisitorData() {
     let currentVisitorData = localStorage.getItem("visitorData");
     let currentVisitorDataJson;
 
-    if (currentVisitorData !== 'null') {
+    if (currentVisitorData !== null) {
         currentVisitorDataJson = JSON.parse(currentVisitorData);
         currentVisitorDataJson.lastVisit = currentDate;
         currentVisitorDataJson.count++;
