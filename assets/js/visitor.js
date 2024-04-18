@@ -1,5 +1,5 @@
 function updateLocalStorageWithVisitorData() {
-    const currentDate = new Date().toLocaleString();
+    const currentDate = new Date();
     let currentVisitorData = localStorage.getItem("visitorData");
     let currentVisitorDataJson;
 
