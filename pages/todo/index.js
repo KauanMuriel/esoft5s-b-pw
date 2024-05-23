@@ -13,7 +13,7 @@ function addTask(event) {
   const taskTitle = formData.get('title')
   const taskDescription = formData.get('description');
 
-  const li = createTaskItemElement(taskTitle, taskDescription); 
+  const li = createTaskItemElement(taskId, taskTitle, taskDescription); 
 
   taskList.appendChild(li)
 
