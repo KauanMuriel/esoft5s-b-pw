@@ -22,8 +22,10 @@ function addTask(event) {
       <h2>${taskTitle}</h2>
       <p>${taskDescription}</p>
     </div>
-    <button title="Editar tarefa" onClick="openEditDialog(${taskId})">✏️</button>
-    <button title="Excluir tarefa" onClick="removeTask(${taskId})">❌</button>
+    <div class="task-actions">
+      <button title="Editar tarefa" onClick="openEditDialog(${taskId})">✏️</button>
+      <button title="Excluir tarefa" onClick="removeTask(${taskId})">❌</button>
+    </div>
   `
 
   taskList.appendChild(li)
@@ -78,9 +80,14 @@ function editTask(event) {
 function removeTask(taskId) {
   const tasks = JSON.parse(localStorage.getItem(taskKey)) || [];
   const selectedTask = tasks.findIndex((task) => task.id === taskId);
-
-  if (index != -1) {
+  
+  if (selectedTask != -1) {
     tasks.splice(selectedTask, 1);
+    localStorage.setItem(taskKey, JSON.stringify(tasks));
+
+    const taskListElement = document.querySelector("#taskList");
+    const taskElement = document.querySelector(`#id-${taskId}`);
+    taskListElement.removeChild(taskElement);
   }
 }
 
@@ -97,7 +104,10 @@ window.addEventListener('DOMContentLoaded', () => {
           <h2>${task.title}</h2>
           <p>${task.description}</p>
         </div>
-        <button title="Editar tarefa" onClick="openEditDialog(${task.id})">✏️</button>
+        <div class="task-actions">
+          <button title="Editar tarefa" onClick="openEditDialog(${task.id})">✏️</button>
+          <button title="Excluir tarefa" onClick="removeTask(${task.id})">❌</button>
+        </div>
       </li>
     `
     )

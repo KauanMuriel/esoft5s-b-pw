@@ -87,6 +87,7 @@ li {
   border: solid 1px #ccc;
   display: flex;
   flex-direction: row;
+  justify-content: space-between;
   width: 100%;
 }
 
@@ -94,6 +95,11 @@ li div {
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+li .task-actions {
+  flex-direction: row;
+  gap: 15px;
 }
 
 li p {
