@@ -1,5 +1,6 @@
 const taskKey = '@tasks'
-let currentTasks = [];
+
+let selectedTaskId = null
 
 // Função para adicionar tarefa
 function addTask(event) {
@@ -11,69 +12,94 @@ function addTask(event) {
   const formData = new FormData(form)
 
   const taskTitle = formData.get('title')
-  const taskDescription = formData.get('description');
+  const taskDescription = formData.get('description')
 
-  const li = createTaskItemElement(taskId, taskTitle, taskDescription); 
+  const li = document.createElement('li')
+
+  li.id = `id-${taskId}`
+  li.innerHTML = `
+    <div>
+      <h2>${taskTitle}</h2>
+      <p>${taskDescription}</p>
+    </div>
+    <button title="Editar tarefa" onClick="openEditDialog(${taskId})">✏️</button>
+    <button title="Excluir tarefa" onClick="removeTask(${taskId})">❌</button>
+  `
 
   taskList.appendChild(li)
 
   // Salvar tarefas no localStorage
-  currentTasks = JSON.parse(localStorage.getItem(taskKey)) || [];
-  const newTask = { id: taskId, title: taskTitle, description: taskDescription };
-  currentTasks.push(newTask);
-  localStorage.setItem(taskKey, JSON.stringify(currentTasks))
+  const tasks = JSON.parse(localStorage.getItem(taskKey)) || []
+  tasks.push({
+    id: taskId,
+    title: taskTitle,
+    description: taskDescription,
+  })
+  localStorage.setItem(taskKey, JSON.stringify(tasks))
 
   form.reset()
 }
 
+function openEditDialog(taskId) {
+  const tasks = JSON.parse(localStorage.getItem(taskKey)) || []
+
+  selectedTaskId = tasks.findIndex((task) => task.id === taskId)
+  const task = tasks[selectedTaskId]
+
+  const dialog = document.querySelector('dialog')
+
+  const editTitle = document.querySelector('#editTaskForm #title')
+  const editDescription = document.querySelector('#editTaskForm #description')
+  
+  editTitle.value = task.title
+  editDescription.value = task.description
+  
+  dialog.showModal()
+}
+
+function closeDialog() {
+  const dialog = document.querySelector('dialog')
+  dialog.close()
+}
+
+function editTask(event) {
+  const form = document.querySelector('#editTaskForm');
+  const formData = new FormData(form);
+
+  const tasks = JSON.parse(localStorage.getItem(taskKey)) || [];
+  const outdatedTask = tasks[selectedTaskId]
+
+  outdatedTask.title = formData.get("title");
+  outdatedTask.description = formData.get("description");
+
+  localStorage.setItem(taskKey, JSON.stringify(tasks));
+}
+
+function removeTask(taskId) {
+  const tasks = JSON.parse(localStorage.getItem(taskKey)) || [];
+  const selectedTask = tasks.findIndex((task) => task.id === taskId);
+
+  if (index != -1) {
+    tasks.splice(selectedTask, 1);
+  }
+}
+
 // Carregar tarefas do localStorage ao recarregar a página
 window.addEventListener('DOMContentLoaded', () => {
-  currentTasks = JSON.parse(localStorage.getItem(taskKey)) || []
+  const tasks = JSON.parse(localStorage.getItem(taskKey)) || []
   const taskList = document.querySelector('#taskList')
-  currentTasks.forEach((task) => {
-    taskList.appendChild(createTaskItemElement(task.id, task.title, task.description));
-  });
+
+  taskList.innerHTML = tasks
+    .map(
+      (task) => `
+      <li id='id-${task.id}'>
+        <div>
+          <h2>${task.title}</h2>
+          <p>${task.description}</p>
+        </div>
+        <button title="Editar tarefa" onClick="openEditDialog(${task.id})">✏️</button>
+      </li>
+    `
+    )
+    .join('')
 })
-
-function createTaskItemElement(id, title, description) {
-  const listItem = document.createElement("li");
-  const heading = document.createElement("h2");
-  const paragraph = document.createElement("p");
-  const button = createTaskItemButton();
-  heading.textContent = title;
-  paragraph.textContent = description;
-  listItem.appendChild(heading);
-  listItem.appendChild(paragraph);
-  listItem.appendChild(button);
-  listItem.classList.add("todo-item");
-  listItem.id = id;
-  return listItem;
-}
-
-function createTaskItemButton() {
-  const button = document.createElement("button");
-  button.textContent = "✏️";
-  button.title = "Editar tarefa";
-
-  button.addEventListener("click", (e) => {
-    const dialog = document.querySelector("#dialog-task-edit")
-    const taskId = e.target.parentElement.id;
-    const task = currentTasks.find(task => task.id == taskId);
-    setDialogInputsValue(dialog, task);
-    dialog.setAttribute("open", true);
-  })
-  return button;
-}
-
-function setDialogInputsValue(dialog, task) {
-  const titleInput = dialog.querySelector("#input-title");
-  const descriptionInput = dialog.querySelector("#input-description");
-  titleInput.value = task.title;
-  descriptionInput.value = task.description;
-}
-
-function closeDialog(event) {
-  event.preventDefault();
-  const dialog = document.querySelector("#dialog-task-edit");
-  dialog.removeAttribute("open");
-}
